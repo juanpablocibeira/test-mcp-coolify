@@ -42,7 +42,13 @@ app = FastAPI(title="Test MCP App")
 
 @app.on_event("startup")
 def on_startup():
-    Base.metadata.create_all(bind=engine)
+    for attempt in range(10):
+        try:
+            Base.metadata.create_all(bind=engine)
+            return
+        except Exception:
+            import time
+            time.sleep(2)
 
 
 @app.get("/")
